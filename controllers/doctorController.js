@@ -29,6 +29,8 @@ const doctorList = async (req, res) => {
     }
 }
 
+
+
 //API for doctor login
 const loginDoctor = async (req, res) => {
     try {
