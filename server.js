@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import cors from "cors";
 import "dotenv/config";
@@ -12,26 +11,30 @@ import userRouter from "./routes/userRoute.js";
 
 const app = express();
 
-// Middleware FIRST
+// middleware FIRST
 app.use(express.json());
 app.use(cors());
 
-// Health check (IMPORTANT)
+// health check (IMPORTANT)
 app.get("/api", (req, res) => {
-  res.status(200).json({ success: true, message: "API WORKING" });
+  res.status(200).json({
+    success: true,
+    message: "API WORKING"
+  });
 });
 
-// Connect services safely
+// connect services safely (serverless)
 (async () => {
   try {
     await connectDB();
     connectCloudinary();
-  } catch (error) {
-    console.error("Startup error:", error.message);
+    console.log("Services initialized");
+  } catch (err) {
+    console.error("Startup error:", err.message);
   }
 })();
 
-// Routes
+// routes
 app.use("/api/admin", adminRouter);
 app.use("/api/doctor", doctorRouter);
 app.use("/api/user", userRouter);
