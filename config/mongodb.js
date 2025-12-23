@@ -3,23 +3,15 @@ import mongoose from "mongoose";
 let isConnected = false;
 
 const connectDB = async () => {
-  if (isConnected) {
-    return;
-  }
+  if (isConnected) return; // Prevent multiple connections
 
-  try {
-    const db = await mongoose.connect(process.env.MONGODB_URI, {
-      dbName: "test", // 👈 PUT YOUR ACTUAL DB NAME
-      serverSelectionTimeoutMS: 5000,
-    });
+  mongoose.connection.on("connected", () => {
+    console.log("Database Connected");
+  });
 
-    isConnected = db.connections[0].readyState === 1;
+  await mongoose.connect(process.env.MONGODB_URL);
 
-    console.log("MongoDB Connected");
-  } catch (error) {
-    console.error("MongoDB connection failed:", error.message);
-    throw error;
-  }
+  isConnected = true;
 };
 
 export default connectDB;
