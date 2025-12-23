@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cors());
 
 // health check (IMPORTANT)
-app.get("/api", (req, res) => {
+app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     message: "API WORKING"
