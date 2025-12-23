@@ -12,8 +12,12 @@ import userRouter from "./routes/userRoute.js";
 const app = express();
 
 // middleware
-app.use(express.json());
 app.use(cors());
+app.use(express.json());
+
+// 🔥 CRITICAL: connect BEFORE routes
+await connectDB();
+connectCloudinary();
 
 // health check
 app.get("/", (req, res) => {
@@ -22,16 +26,6 @@ app.get("/", (req, res) => {
     message: "API WORKING",
   });
 });
-
-// connect services safely (serverless)
-(async () => {
-  try {
-    await connectDB();
-    connectCloudinary();
-  } catch (err) {
-    console.error("Startup error:", err.message);
-  }
-})();
 
 // routes
 app.use("/api/admin", adminRouter);
