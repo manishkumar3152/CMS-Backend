@@ -1,21 +1,20 @@
 import mongoose from "mongoose";
 
-let isConnected = false;
+let cached = global.mongoose;
 
-const connectDB = async () => {
-  if (isConnected) return; // Prevent multiple connections
+if (!cached) cached = global.mongoose = { conn: null, promise: null };
 
-  mongoose.connection.on("connected", () => {
-    console.log("Database Connected");
-  });
+async function connectDB() {
+  if (cached.conn) return cached.conn;
 
-  await mongoose.connect(process.env.MONGODB_URL, {
-    dbName: "healthcare",
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  if (!cached.promise) {
+    cached.promise = mongoose.connect(process.env.MONGODB_URL)
+      .then(mongoose => mongoose);
+  }
 
-  isConnected = true;
-};
+  cached.conn = await cached.promise;
+  console.log("Database Connected");
+  return cached.conn;
+}
 
 export default connectDB;
