@@ -1,20 +1,17 @@
 import mongoose from "mongoose";
 
-let cached = global.mongoose;
+let isConnected = false;
 
-if (!cached) cached = global.mongoose = { conn: null, promise: null };
+const connectDB = async () => {
+  if (isConnected) return; // Prevent multiple connections
 
-async function connectDB() {
-  if (cached.conn) return cached.conn;
+  mongoose.connection.on("connected", () => {
+    console.log("Database Connected");
+  });
 
-  if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGODB_URL)
-      .then(mongoose => mongoose);
-  }
+  await mongoose.connect(process.env.MONGODB_URL);
 
-  cached.conn = await cached.promise;
-  console.log("Database Connected");
-  return cached.conn;
-}
+  isConnected = true;
+};
 
 export default connectDB;
