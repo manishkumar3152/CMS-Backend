@@ -9,18 +9,39 @@ import adminRouter from "./routes/adminRoute.js";
 import doctorRouter from "./routes/doctorRoute.js";
 import userRouter from "./routes/userRoute.js";
 
+import Doctor from "./models/doctorModel.js"; // import your doctor model
+
 const app = express();
 
-// middleware FIRST
+// middleware
 app.use(express.json());
 app.use(cors());
 
-// health check (IMPORTANT)
+// health check
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "API WORKING"
+    message: "API WORKING",
   });
+});
+
+// TEST endpoint to check MongoDB connection
+app.get("/api/test-db", async (req, res) => {
+  try {
+    await connectDB(); // ensure DB is connected
+    const doctors = await Doctor.find({});
+    res.status(200).json({
+      success: true,
+      message: "Connected to MongoDB successfully",
+      doctorsCount: doctors.length,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to connect to MongoDB",
+      error: err.message,
+    });
+  }
 });
 
 // connect services safely (serverless)
